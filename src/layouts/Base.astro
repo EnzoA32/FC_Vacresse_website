@@ -1,0 +1,28 @@
+---
+import { club, nav } from '../lib/data.js';
+const { title, description = `${club.full} : actualités, calendrier, résultats et photos.` } = Astro.props;
+const path = Astro.url.pathname;
+---
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{title} · {club.name}</title><meta name="description" content={description}>
+<meta property="og:title" content={`${title} · ${club.name}`}><meta property="og:description" content={description}><link rel="icon" href="/logo.jpg">
+<style is:global>
+:root{--red:#C8102E;--ink:#1B1B1F;--bg:#F6F4F2;--line:#E4E0DC}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,sans-serif;color:var(--ink);background:var(--bg)}
+a{color:inherit}h1,h2{line-height:1.1}h1{font-size:2.2rem;margin:0 0 1rem}h2{font-size:1.4rem}
+.shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+aside{background:#fff;border-right:1px solid var(--line);padding:20px 14px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;text-decoration:none;font-size:1.2rem}.brand img{width:56px;height:56px;object-fit:contain}
+nav a{display:block;padding:12px;border-radius:8px;text-decoration:none;font-weight:500}nav a.on{background:var(--red);color:#fff}
+main{padding:28px 36px;max-width:1000px}.top{display:none}
+.card{background:#fff;border-radius:14px;padding:18px;margin:0 0 14px}.badge{display:inline-block;background:var(--red);color:#fff;border-radius:99px;padding:2px 10px;font-size:.8rem;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}.btn{display:inline-block;background:var(--red);color:#fff;border-radius:8px;padding:12px 18px;text-decoration:none;font-weight:600;border:0;cursor:pointer;font:inherit}
+input,select,textarea{width:100%;padding:12px;border:1px solid #D5D0CB;border-radius:8px;font:inherit;margin:4px 0 12px;min-height:44px}
+.muted{color:#5A5A60}details{background:#fff;border-radius:12px;padding:14px 18px;margin-bottom:10px}summary{cursor:pointer;font-weight:600}
+@media(max-width:900px){.shell{display:block}aside{display:none}.top{display:block;background:#fff;border-bottom:1px solid var(--line);padding:8px 16px}.top details{background:none;padding:0;margin:0}main{padding:18px 16px}}
+</style></head>
+<body><div class="shell">
+<aside><a class="brand" href="/"><img src="/logo.jpg" alt="Logo FC Vacresse">FC VACRESSE</a><nav>{nav.map(([h,l]) => <a href={h} class={(h==='/'?path==='/':path.startsWith(h))?'on':''}>{l}</a>)}</nav></aside>
+<div><div class="top"><a class="brand" href="/"><img src="/logo.jpg" alt="Logo FC Vacresse">FC VACRESSE</a><details><summary>Menu</summary><nav>{nav.map(([h,l]) => <a href={h}>{l}</a>)}</nav></details></div>
+<main><slot /></main></div></div></body></html>

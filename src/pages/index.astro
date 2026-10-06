@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import { club, events, teamName, fmt } from '../lib/data.js';
+const next = events.filter(e => e.type==='match' && !e.score).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,3);
+const last = events.filter(e => e.score).slice(0,3);
+---
+<Base title="Accueil">
+<h1>{club.full}</h1><p class="muted">Saison {club.season}</p>
+<h2>Prochains matchs</h2>
+{next.length ? next.map(e => <div class="card"><span class="badge">{teamName(e.team)}</span> <b>{e.title}</b><br>{fmt(e.date)} · {e.place}</div>) : <p class="muted">Aucun match annoncé.</p>}
+<h2>Derniers résultats</h2>
+{last.length ? last.map(e => <div class="card"><span class="badge">{teamName(e.team)}</span> {e.title} : <b>{e.score}</b></div>) : <p class="muted">Pas encore de résultat.</p>}
+<p><a class="btn" href="/calendrier">Voir le calendrier</a></p>
+</Base>
