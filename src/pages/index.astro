@@ -6,14 +6,15 @@ const next = up.find(e => e.type === 'match');
 const last = events.filter(e => e.score).slice(0,3);
 ---
 <Base title="Accueil">
-<section class="hero"><div class="wrap"><span class="kicker">Saison {club.season}</span><h1 style="margin-top:14px">Royal Football Club<br>Vacresse</h1><p>Un club familial et local. Retrouvez nos matchs, nos équipes et nos photos.</p>
-<a class="btn" href="/calendrier">Calendrier</a><a class="btn ghost" href="/equipes">Nos équipes</a></div></section>
+<section class="hero"><div class="wrap"><div><span class="kicker">Saison {club.season}</span><h1 style="margin-top:14px">Royal Football Club<br>Vacresse</h1><p>Un club familial et local. Retrouvez nos matchs, nos équipes et nos photos.</p>
+<a class="btn" href="/calendrier">Calendrier</a><a class="btn ghost" href="/equipes">Nos équipes</a></div><img src="/equipe.jpg" alt="Équipe première du FC Vacresse" width="1024" height="683"></div></section>
 {next && <div class="mc"><div class="box">
 <div><span class="badge">{teamName(next.team)}</span><h3 style="margin-top:10px">Prochain match</h3><div class="muted">{fmt(next.date)}<br>{next.place}</div></div>
 <div class="vs"><span class="logo"><img src="/logo.jpg" alt="FC Vacresse"></span>VS<span class="logo">?</span></div>
 <div class="cd" data-d={next.date}><div><b>--</b><span>Jours</span></div><div><b>--</b><span>Heures</span></div><div><b>--</b><span>Min</span></div><div><b>--</b><span>Sec</span></div></div></div></div>}
-<section class="wrap"><h2>Actualités</h2><div class="grid news">{news.map(n => <a class="n" href="#"><span class="badge" style="align-self:flex-start">{n.cat}</span><h3>{n.title}</h3></a>)}</div></section>
+<section class="wrap"><h2>Actualités</h2><div class="grid news">{news.map(n => <a class="n" href="#" style={`background-image:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.8)),url(${n.img})`}><span class="badge" style="align-self:flex-start">{n.cat}</span><h3>{n.title}</h3></a>)}</div></section>
 <section class="wrap" style="padding-top:0"><h2>Nos équipes</h2><div class="grid">{teams.map(t => <a class="tile" href={`/equipes/${t.slug}`}>{t.name}</a>)}</div></section>
+<section class="wrap" style="padding-top:0"><div class="grid news"><a class="n" href="/contact" style="background-image:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.8)),url(/enfant.jpg)"><span class="badge" style="align-self:flex-start">École des jeunes</span><h3>Viens jouer avec nous</h3></a><a class="n" href="/contact" style="background-image:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.8)),url(/stade.jpg)"><span class="badge" style="align-self:flex-start">Le stade</span><h3>Venez nous encourager</h3></a></div></section>
 <section class="wrap" style="padding-top:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px">
 <div><h2>Agenda</h2>{up.slice(0,5).map(e => <div class="card"><span class="badge">{teamName(e.team)}</span> <b>{e.title}</b><br><span class="muted">{fmt(e.date)} · {e.place}</span></div>)}</div>
 <div><h2>Résultats</h2>{last.length ? last.map(e => <div class="card"><span class="badge">{teamName(e.team)}</span> {e.title}<div style="font:800 2rem 'Barlow Condensed'">{e.score}</div></div>) : <p class="muted">Pas encore de résultat.</p>}</div></section>

@@ -21,7 +21,7 @@ export const nav = [['/','Accueil'],['/equipes','Équipes'],['/calendrier','Cale
 export const teamName = (slug) => teams.find(t => t.slug === slug)?.name ?? slug;
 export const fmt = (d) => new Date(d).toLocaleDateString('fr-BE', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 export const news = [
- { title: "[Titre de l'article à la une]", cat: 'Vie du club', date: '2026-10-05' },
- { title: '[Résumé de match]', cat: 'Résumé de match', date: '2026-10-04' },
- { title: '[Annonce importante]', cat: 'Annonce', date: '2026-10-02' }
+ { title: "[Titre de l'article à la une]", cat: 'Vie du club', img: '/ballon.jpg', date: '2026-10-05' },
+ { title: '[Résumé de match]', cat: 'Résumé de match', img: '/terrain.jpg', date: '2026-10-04' },
+ { title: '[Annonce importante]', cat: 'Annonce', img: '/stade.jpg', date: '2026-10-02' }
 ];
