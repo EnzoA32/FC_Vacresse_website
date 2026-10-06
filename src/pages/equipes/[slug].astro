@@ -5,7 +5,7 @@ export function getStaticPaths() { return teams.map(t => ({ params: { slug: t.sl
 const { t } = Astro.props;
 const list = events.filter(e => e.team === t.slug).sort((a,b)=>a.date.localeCompare(b.date));
 ---
-<Base title={t.name}><h1>{t.name}</h1><p class="muted">Saison {club.season} · {t.staff}</p>
+<Base title={t.name}><h1>{t.name}</h1><p class="muted">Saison {club.season} · {t.staff}</p><div class="wrap">
 <h2>Entraînements</h2>{t.trainings.map(x => <div class="card">{x.day} · {x.time} · {x.place}</div>)}
 <h2>Matchs et événements</h2>{list.length ? list.map(e => <div class="card"><b>{e.title}</b> {e.score && <span class="badge">{e.score}</span>}<br>{fmt(e.date)} · {e.place}</div>) : <p class="muted">Rien de prévu.</p>}
-<p><a class="btn" href={club.rbfa}>Classement officiel sur RBFA</a></p></Base>
+<p><a class="btn" href={club.rbfa}>Classement officiel sur RBFA</a></p></div></Base>

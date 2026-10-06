@@ -1,14 +1,24 @@
 ---
 import Base from '../layouts/Base.astro';
-import { club, events, teamName, fmt } from '../lib/data.js';
-const next = events.filter(e => e.type==='match' && !e.score).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,3);
+import { club, events, teams, news, teamName, fmt } from '../lib/data.js';
+const up = events.filter(e => !e.score).sort((a,b)=>a.date.localeCompare(b.date));
+const next = up.find(e => e.type === 'match');
 const last = events.filter(e => e.score).slice(0,3);
 ---
 <Base title="Accueil">
-<h1>{club.full}</h1><p class="muted">Saison {club.season}</p>
-<h2>Prochains matchs</h2>
-{next.length ? next.map(e => <div class="card"><span class="badge">{teamName(e.team)}</span> <b>{e.title}</b><br>{fmt(e.date)} · {e.place}</div>) : <p class="muted">Aucun match annoncé.</p>}
-<h2>Derniers résultats</h2>
-{last.length ? last.map(e => <div class="card"><span class="badge">{teamName(e.team)}</span> {e.title} : <b>{e.score}</b></div>) : <p class="muted">Pas encore de résultat.</p>}
-<p><a class="btn" href="/calendrier">Voir le calendrier</a></p>
-</Base>
+<section class="hero"><div class="wrap"><span class="kicker">Saison {club.season}</span><h1 style="margin-top:14px">Royal Football Club<br>Vacresse</h1><p>Un club familial et local. Retrouvez nos matchs, nos équipes et nos photos.</p>
+<a class="btn" href="/calendrier">Calendrier</a><a class="btn ghost" href="/equipes">Nos équipes</a></div></section>
+{next && <div class="mc"><div class="box">
+<div><span class="badge">{teamName(next.team)}</span><h3 style="margin-top:10px">Prochain match</h3><div class="muted">{fmt(next.date)}<br>{next.place}</div></div>
+<div class="vs"><span class="logo"><img src="/logo.jpg" alt="FC Vacresse"></span>VS<span class="logo">?</span></div>
+<div class="cd" data-d={next.date}><div><b>--</b><span>Jours</span></div><div><b>--</b><span>Heures</span></div><div><b>--</b><span>Min</span></div><div><b>--</b><span>Sec</span></div></div></div></div>}
+<section class="wrap"><h2>Actualités</h2><div class="grid news">{news.map(n => <a class="n" href="#"><span class="badge" style="align-self:flex-start">{n.cat}</span><h3>{n.title}</h3></a>)}</div></section>
+<section class="wrap" style="padding-top:0"><h2>Nos équipes</h2><div class="grid">{teams.map(t => <a class="tile" href={`/equipes/${t.slug}`}>{t.name}</a>)}</div></section>
+<section class="wrap" style="padding-top:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px">
+<div><h2>Agenda</h2>{up.slice(0,5).map(e => <div class="card"><span class="badge">{teamName(e.team)}</span> <b>{e.title}</b><br><span class="muted">{fmt(e.date)} · {e.place}</span></div>)}</div>
+<div><h2>Résultats</h2>{last.length ? last.map(e => <div class="card"><span class="badge">{teamName(e.team)}</span> {e.title}<div style="font:800 2rem 'Barlow Condensed'">{e.score}</div></div>) : <p class="muted">Pas encore de résultat.</p>}</div></section>
+<section class="cta"><div class="wrap"><h2>Rejoignez le club</h2><p>Une question, une inscription ? Écrivez-nous.</p><a class="btn" href="/contact">Nous contacter</a></div></section>
+<script is:inline>
+const c=document.querySelector('.cd');if(c){const t=new Date(c.dataset.d).getTime(),b=c.querySelectorAll('b'),p=n=>String(n).padStart(2,'0');
+const f=()=>{let s=Math.max(0,Math.floor((t-Date.now())/1e3));[Math.floor(s/86400),Math.floor(s%86400/3600),Math.floor(s%3600/60),s%60].forEach((v,i)=>b[i].textContent=p(v))};f();setInterval(f,1e3)}
+</script></Base>
