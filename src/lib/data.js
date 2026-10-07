@@ -19,7 +19,7 @@ const localFaq = [
 ];
 const localAlbums = [{ title: '[Titre de l\'album]', team: 'u17-a', date: '2026-09-12', photos: [] }];
 export const contactSubjects = ['Question générale','École des jeunes','Inscription joueur','Équipe première','Sponsoring','Organisation / événement','Presse / communication','Autre'];
-export const nav = [['/#accueil','Accueil'],['/#matchs','Matchs'],['/#annonces','Le club'],['/#sponsors','Sponsors'],['/#equipes','Équipes'],['/#agenda','Agenda'],['/#contact','Contact']];
+export const nav = [['/#accueil','Accueil'],['/#matchs','Matchs'],['/#annonces','Le club'],['/#sponsors','Sponsors'],['/equipes','Équipes'],['/calendrier','Agenda'],['/contact','Contact']];
 export const teamName = (slug) => teams.find(t => t.slug === slug)?.name ?? slug;
 export const fmt = (d) => new Date(d).toLocaleDateString('fr-BE', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 const localNews = [
