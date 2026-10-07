@@ -19,7 +19,7 @@ const localFaq = [
 ];
 const localAlbums = [{ title: '[Titre de l\'album]', team: 'u17-a', date: '2026-09-12', photos: [] }];
 export const contactSubjects = ['Question générale','École des jeunes','Inscription joueur','Équipe première','Sponsoring','Organisation / événement','Presse / communication','Autre'];
-export const nav = [['/','Accueil'],['/equipes','Équipes'],['/calendrier','Calendrier'],['/resultats','Résultats'],['/galerie','Galerie'],['/faq','FAQ'],['/contact','Contact']];
+export const nav = [['/#accueil','Accueil'],['/#matchs','Matchs'],['/#annonces','Le club'],['/#sponsors','Sponsors'],['/#equipes','Équipes'],['/#agenda','Agenda'],['/#contact','Contact']];
 export const teamName = (slug) => teams.find(t => t.slug === slug)?.name ?? slug;
 export const fmt = (d) => new Date(d).toLocaleDateString('fr-BE', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 const localNews = [
@@ -40,13 +40,14 @@ const client = createClient({ projectId: 'upze23ba', dataset: 'production', apiV
 const img = (src, w = 1600) => (src ? imageUrlBuilder(client).image(src).width(w).auto('format').url() : '');
 const get = async (query) => { try { return await client.fetch(query); } catch (e) { console.warn('Sanity indisponible :', e.message); return []; } };
 const pick = (remote, local) => (remote && remote.length ? remote : local);
-const [rTeams, rEvents, rNews, rFaq, rAlbums, rSlides] = await Promise.all([
+const [rTeams, rEvents, rNews, rFaq, rAlbums, rSlides, rSponsors] = await Promise.all([
   get(`*[_type=="team" && season->current==true]|order(order asc){name,"slug":slug.current,staff,trainings}`),
   get(`*[_type=="event"]|order(date asc){date,type,title,place,score,"team":team->slug.current}`),
   get(`*[_type=="article" && defined(publishedAt)]|order(publishedAt desc)[0..8]{title,"cat":category,image,"date":publishedAt}`),
   get(`*[_type=="faqItem"]|order(order asc){"q":question,"a":answer}`),
   get(`*[_type=="album"]|order(date desc){title,date,"team":team->slug.current,photos}`),
-  get(`*[_type=="slide"]|order(order asc){title,text,link,cta,image}`)
+  get(`*[_type=="slide"]|order(order asc){title,text,link,cta,image}`),
+  get(`*[_type=="sponsor"]|order(order asc){name,url,logo}`)
 ]);
 export const teams = pick(rTeams.map(t => ({ ...t, staff: t.staff || '', trainings: t.trainings || [] })), localTeams);
 export const events = pick(rEvents.map(e => ({ ...e, score: e.score || null, place: e.place || '' })), localEvents);
@@ -54,3 +55,5 @@ export const news = pick(rNews.map(n => ({ ...n, img: img(n.image, 800) })), loc
 export const faq = pick(rFaq, localFaq);
 export const albums = pick(rAlbums.map(a => ({ ...a, photos: (a.photos || []).map(p => img(p, 1200)) })), localAlbums);
 export const slides = pick(rSlides.map(x => ({ ...x, img: img(x.image, 2400) })), localSlides);
+const localSponsors = ['Sponsor 1','Sponsor 2','Sponsor 3','Sponsor 4','Sponsor 5','Sponsor 6'].map(name => ({ name, url: '', img: '' }));
+export const sponsors = pick(rSponsors.map(x => ({ ...x, img: img(x.logo, 400) })), localSponsors);
