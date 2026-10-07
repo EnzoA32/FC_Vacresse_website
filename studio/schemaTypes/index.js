@@ -56,4 +56,11 @@ const faqItem = defineType({ name: 'faqItem', title: 'Question FAQ', type: 'docu
   f({ name: 'order', title: 'Ordre', type: 'number' })
 ] });
 
-export const schemaTypes = [season, team, event, article, album, slide, faqItem];
+const sponsor = defineType({ name: 'sponsor', title: 'Sponsor', type: 'document', fields: [
+  f({ name: 'name', title: 'Nom', type: 'string', validation: r => r.required() }),
+  f({ name: 'logo', title: 'Logo', type: 'image' }),
+  f({ name: 'url', title: 'Site web', type: 'url' }),
+  f({ name: 'order', title: 'Ordre', type: 'number' })
+], preview: { select: { title: 'name', media: 'logo' } } });
+
+export const schemaTypes = [sponsor, season, team, event, article, album, slide, faqItem];
