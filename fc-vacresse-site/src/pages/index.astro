@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import { club, events, teams, news, slides, sponsors, contactSubjects, teamName, fmt } from '../lib/data.js';
+const now = Date.now();
+const futur = events.filter(e => new Date(e.date).getTime() >= now).sort((a,b) => a.date.localeCompare(b.date));
+const items = teams.map(t => { const m = futur.find(e => e.team === t.slug && e.type === 'match');
+  return { slug: t.slug, name: t.name, title: m ? m.title : 'Prochain match à venir', date: m ? fmt(m.date) : 'Date à confirmer', place: m ? m.place : '', iso: m ? m.date : '' }; })
+  .sort((a,b) => (a.iso ? 0 : 1) - (b.iso ? 0 : 1) || a.iso.localeCompare(b.iso));
+const [big, ...small] = news;
+const f0 = items[0];
+---
+<Base title="Accueil">
+<section id="accueil" class="sl" role="region" aria-roledescription="carousel" aria-label="À la une">
+{slides.map((x,i) => <div class={`sl-i${i===0?' on':''}`} aria-hidden={i!==0}><img src={x.img} alt="" loading={i===0?'eager':'lazy'} fetchpriority={i===0?'high':'auto'}><div class="sl-t"><span class="kicker">Saison {club.season}</span><h1>{x.title}</h1><p>{x.text}</p><a class="btn" href={x.link}>{x.cta}</a></div></div>)}
+<div class="sl-c"><button type="button" id="sp" aria-label="Précédent">‹</button><button type="button" id="sn" aria-label="Suivant">›</button><button type="button" id="sx" aria-label="Mettre en pause">❚❚</button>{slides.map((x,i) => <button type="button" class={`sl-d${i===0?' on':''}`} aria-label={`Diapositive ${i+1}`}></button>)}</div>
+<a class="scroll" href="#matchs" aria-label="Descendre">↓</a></section>
+
+<section id="matchs" class="sec"><div class="wrap">
+<div class="sh rv"><small>01 — Prochains matchs</small><h2>Chaque équipe,<br>son prochain rendez-vous</h2></div>
+<div class="tabs rv" id="tabs">{items.map((t,i) => <button type="button" class={i===0?'on':''} data-i={i}>{t.name}</button>)}</div>
+<a class="ft rv" id="ft" href={`/equipes/${f0.slug}`}><div class="ft-in">
+<span class="badge" id="ftn" style="background:#fff;color:var(--red)">{f0.name}</span>
+<div class="vs2"><span class="logo"><img src="/logo.jpg" alt="FC Vacresse"></span><b id="ftt">{f0.title}</b><span class="logo">?</span></div>
+<div class="ft-d" id="ftd">{f0.date}</div><div id="ftp">{f0.place}</div>
+<div class="cd" id="cd"><div><b>--</b><span>Jours</span></div><div><b>--</b><span>Heures</span></div><div><b>--</b><span>Min</span></div><div><b>--</b><span>Sec</span></div></div>
+<span class="btn">Voir l'équipe →</span></div></a>
+<script type="application/json" id="md" set:html={JSON.stringify(items)}></script>
+</div></section>
+
+<section id="annonces" class="sec alt"><div class="wrap">
+<div class="sh rv"><small>02 — Le club</small><h2>Annonces &amp; communication</h2></div>
+<div class="ann">{[big,...small.slice(0,2)].filter(Boolean).map((n,i) => <a class={`n rv${i===0?' bigc':''}`} style={`--d:${i*.12}s`} href="#"><img src={n.img} alt="" loading="lazy"><span class="badge" style="align-self:flex-start">{n.cat}</span><h3>{n.title}</h3></a>)}</div>
+</div></section>
+
+<section id="sponsors" class="sec"><div class="wrap">
+<div class="sh rv"><small>03 — Partenaires</small><h2>Ils font vivre le club</h2></div></div>
+<div class="mq rv"><div class="tr">{[...sponsors,...sponsors].map(x => <div class="sp">{x.img ? <img src={x.img} alt={x.name} loading="lazy"> : x.name}</div>)}</div></div>
+<div class="wrap" style="padding-top:28px;text-align:center"><a class="btn" href="#contact">Devenir partenaire</a></div></section>
+
+<section id="equipes" class="sec alt"><div class="wrap">
+<div class="sh rv"><small>04 — Nos équipes</small><h2>{teams.length} équipes, un seul club</h2></div>
+<div class="grid">{teams.map((t,i) => <a class="tile rv" style={`--d:${(i%6)*.06}s`} href={`/equipes/${t.slug}`}><small>{String(i+1).padStart(2,'0')}</small>{t.name}</a>)}</div>
+</div></section>
+
+<section id="agenda" class="sec"><div class="wrap">
+<div class="sh rv"><small>05 — Agenda</small><h2>À venir au club</h2></div>
+{futur.slice(0,6).map(e => { const d = new Date(e.date); return <a class="ag rv" href="/calendrier"><div class="dt"><b>{d.getDate()}</b><span>{d.toLocaleDateString('fr-BE',{month:'short'})}</span></div><div><span class="badge">{teamName(e.team)}</span> <b>{e.title}</b><div class="muted">{e.place}</div></div><span class="arrow">→</span></a>; })}
+{!futur.length && <p class="muted">Rien d'annoncé pour le moment.</p>}
+<p style="margin-top:22px"><a class="btn ghost" style="margin:0" href="/calendrier">Calendrier complet</a></p>
+</div></section>
+
+<section id="contact" class="sec alt"><div class="wrap cgrid">
+<div class="rv"><div class="sh"><small>06 — Contact</small><h2>Parlons-en</h2></div><p class="muted">{club.full}<br>{club.address}<br>{club.email}</p><p><a class="btn ghost" style="margin:0" href={club.rbfa}>Le club sur RBFA</a></p></div>
+<form class="rv" method="POST" action="https://api.web3forms.com/submit"><input type="hidden" name="access_key" value="VOTRE_CLE_WEB3FORMS"><input type="checkbox" name="botcheck" style="display:none">
+<label>Prénom<input name="prenom" required></label><label>Nom<input name="nom" required></label><label>E-mail<input type="email" name="email" required></label>
+<label>Sujet<select name="sujet">{contactSubjects.map(s => <option>{s}</option>)}</select></label><label>Message<textarea name="message" rows="4" required></textarea></label><button class="btn" type="submit">Envoyer</button></form>
+</div></section>
+
+<script is:inline>
+(()=>{const q=s=>document.querySelector(s),I=JSON.parse(q('#md').textContent);let k=0,tm,cdT,hold=false;
+const ft=q('#ft'),B=q('#cd').querySelectorAll('b'),p2=n=>String(n).padStart(2,'0');
+const tick=()=>{const it=I[k];if(!it.iso){q('#cd').style.visibility='hidden';return}q('#cd').style.visibility='visible';const s=Math.max(0,Math.floor((new Date(it.iso)-Date.now())/1e3));[Math.floor(s/86400),Math.floor(s%86400/3600),Math.floor(s%3600/60),s%60].forEach((v,i)=>B[i].textContent=p2(v))};
+const tabs=[...document.querySelectorAll('#tabs button')];
+const set=n=>{k=(n+I.length)%I.length;const it=I[k];ft.classList.remove('sw');void ft.offsetWidth;ft.classList.add('sw');ft.href='/equipes/'+it.slug;q('#ftn').textContent=it.name;q('#ftt').textContent=it.title;q('#ftd').textContent=it.date;q('#ftp').textContent=it.place;tabs.forEach((b,j)=>b.classList.toggle('on',j===k));tabs[k].scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});tick()};
+tabs.forEach((b,j)=>b.onclick=()=>{hold=true;set(j)});ft.onmouseenter=()=>hold=true;ft.onmouseleave=()=>hold=false;
+if(!matchMedia('(prefers-reduced-motion:reduce)').matches)setInterval(()=>{if(!hold&&I.length>1)set(k+1)},7000);setInterval(tick,1e3);tick();
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.rv').forEach(e=>io.observe(e));
+const s=[...document.querySelectorAll('.sl-i')],d=[...document.querySelectorAll('.sl-d')],x=q('#sx');let i=0,t,off=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const show=n=>{i=(n+s.length)%s.length;s.forEach((e,j)=>{e.classList.toggle('on',j===i);e.setAttribute('aria-hidden',j!==i)});d.forEach((e,j)=>e.classList.toggle('on',j===i))};
+const lab=()=>{x.textContent=off?'▶':'❚❚';x.setAttribute('aria-label',off?'Lancer le défilement':'Mettre en pause')};
+const play=()=>{clearInterval(t);if(!off)t=setInterval(()=>show(i+1),6500)};
+q('#sp').onclick=()=>{show(i-1);play()};q('#sn').onclick=()=>{show(i+1);play()};d.forEach((e,j)=>e.onclick=()=>{show(j);play()});x.onclick=()=>{off=!off;lab();play()};lab();play()})();
+</script>
+</Base>
