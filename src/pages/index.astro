@@ -1,13 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
-import { club, events, teams, news, teamName, fmt } from '../lib/data.js';
+import { club, events, teams, news, slides, teamName, fmt } from '../lib/data.js';
 const up = events.filter(e => !e.score).sort((a,b)=>a.date.localeCompare(b.date));
 const next = up.find(e => e.type === 'match');
 const last = events.filter(e => e.score).slice(0,3);
 ---
 <Base title="Accueil">
-<section class="hero"><div class="wrap"><div><span class="kicker">Saison {club.season}</span><h1 style="margin-top:14px">Royal Football Club<br>Vacresse</h1><p>Un club familial et local. Retrouvez nos matchs, nos équipes et nos photos.</p>
-<a class="btn" href="/calendrier">Calendrier</a><a class="btn ghost" href="/equipes">Nos équipes</a></div><img src="/equipe.jpg" alt="Équipe première du FC Vacresse" width="1024" height="683"></div></section>
+<section class="sl" role="region" aria-roledescription="carousel" aria-label="À la une">
+{slides.map((x,i) => <div class={`sl-i${i===0?' on':''}`} aria-hidden={i!==0}><img src={x.img} alt="" loading={i===0?'eager':'lazy'} fetchpriority={i===0?'high':'auto'}><div class="sl-t"><span class="kicker">Saison {club.season}</span><h1>{x.title}</h1><p>{x.text}</p><a class="btn" href={x.link}>{x.cta}</a></div></div>)}
+<div class="sl-c"><button type="button" id="sp" aria-label="Précédent">‹</button><button type="button" id="sn" aria-label="Suivant">›</button><button type="button" id="sx" aria-label="Mettre en pause">❚❚</button>{slides.map((x,i) => <button type="button" class={`sl-d${i===0?' on':''}`} aria-label={`Diapositive ${i+1}`}></button>)}</div></section>
 {next && <div class="mc"><div class="box">
 <div><span class="badge">{teamName(next.team)}</span><h3 style="margin-top:10px">Prochain match</h3><div class="muted">{fmt(next.date)}<br>{next.place}</div></div>
 <div class="vs"><span class="logo"><img src="/logo.jpg" alt="FC Vacresse"></span>VS<span class="logo">?</span></div>
@@ -22,4 +23,12 @@ const last = events.filter(e => e.score).slice(0,3);
 <script is:inline>
 const c=document.querySelector('.cd');if(c){const t=new Date(c.dataset.d).getTime(),b=c.querySelectorAll('b'),p=n=>String(n).padStart(2,'0');
 const f=()=>{let s=Math.max(0,Math.floor((t-Date.now())/1e3));[Math.floor(s/86400),Math.floor(s%86400/3600),Math.floor(s%3600/60),s%60].forEach((v,i)=>b[i].textContent=p(v))};f();setInterval(f,1e3)}
-</script></Base>
+</script><script is:inline>
+(()=>{const s=[...document.querySelectorAll('.sl-i')],d=[...document.querySelectorAll('.sl-d')],x=document.getElementById('sx');let i=0,t,off=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const show=n=>{i=(n+s.length)%s.length;s.forEach((e,k)=>{e.classList.toggle('on',k===i);e.setAttribute('aria-hidden',k!==i)});d.forEach((e,k)=>e.classList.toggle('on',k===i))};
+const lab=()=>{x.textContent=off?'▶':'❚❚';x.setAttribute('aria-label',off?'Lancer le défilement':'Mettre en pause')};
+const play=()=>{clearInterval(t);if(!off)t=setInterval(()=>show(i+1),6000)};
+document.getElementById('sp').onclick=()=>{show(i-1);play()};document.getElementById('sn').onclick=()=>{show(i+1);play()};
+d.forEach((e,k)=>e.onclick=()=>{show(k);play()});x.onclick=()=>{off=!off;lab();play()};lab();play()})();
+</script>
+</Base>
